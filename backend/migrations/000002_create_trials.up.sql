@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS trials (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    portal_id   INTEGER NOT NULL REFERENCES portals(id),
+    location    TEXT NOT NULL,
+    start_date  DATETIME NOT NULL,
+    end_date    DATETIME NOT NULL,
+    description TEXT,
+    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

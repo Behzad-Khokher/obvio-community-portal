@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS annotations (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id   INTEGER NOT NULL REFERENCES events(id),
+    frame_time REAL NOT NULL DEFAULT 0,
+    x          REAL NOT NULL DEFAULT 0,
+    y          REAL NOT NULL DEFAULT 0,
+    width      REAL NOT NULL DEFAULT 0,
+    height     REAL NOT NULL DEFAULT 0,
+    label      TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

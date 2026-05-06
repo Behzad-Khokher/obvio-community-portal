@@ -1,0 +1,555 @@
+basePath: /api/v1
+definitions:
+  annotation.Annotation:
+    properties:
+      created_at:
+        type: string
+      event_id:
+        type: integer
+      frame_time:
+        type: number
+      height:
+        type: number
+      id:
+        type: integer
+      label:
+        type: string
+      updated_at:
+        type: string
+      width:
+        type: number
+      x:
+        type: number
+      "y":
+        type: number
+    type: object
+  event.Event:
+    properties:
+      created_at:
+        type: string
+      duration:
+        type: number
+      id:
+        type: integer
+      is_violation:
+        type: boolean
+      timestamp:
+        type: string
+      trial_id:
+        type: integer
+      updated_at:
+        type: string
+      video_url:
+        type: string
+      violation_type:
+        type: string
+    type: object
+  portal.Portal:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  trial.Trial:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      portal_id:
+        type: integer
+      start_date:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  usecase.EventsByDayItem:
+    properties:
+      count:
+        type: integer
+      date:
+        type: string
+    type: object
+  usecase.EventsByHourItem:
+    properties:
+      count:
+        type: integer
+      hour:
+        type: integer
+    type: object
+  usecase.InsightsResult:
+    properties:
+      events_by_day:
+        items:
+          $ref: '#/definitions/usecase.EventsByDayItem'
+        type: array
+      events_by_hour:
+        items:
+          $ref: '#/definitions/usecase.EventsByHourItem'
+        type: array
+      peak_day:
+        type: string
+      peak_hour:
+        type: integer
+      total_events:
+        type: integer
+      total_violations:
+        type: integer
+      violation_breakdown:
+        items:
+          $ref: '#/definitions/usecase.ViolationBreakdownItem'
+        type: array
+      violation_rate:
+        type: number
+    type: object
+  usecase.ViolationBreakdownItem:
+    properties:
+      count:
+        type: integer
+      type:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Traffic safety community portal backend.
+  title: Obvio Community Portal API
+  version: "1.0"
+paths:
+  /annotations/{id}:
+    delete:
+      parameters:
+      - description: Annotation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete an annotation
+      tags:
+      - annotations
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Annotation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Annotation data
+        in: body
+        name: annotation
+        required: true
+        schema:
+          $ref: '#/definitions/annotation.Annotation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/annotation.Annotation'
+      summary: Update an annotation
+      tags:
+      - annotations
+  /events/{id}:
+    delete:
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete an event
+      tags:
+      - events
+    get:
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/event.Event'
+      summary: Get event by ID
+      tags:
+      - events
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/event.Event'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/event.Event'
+      summary: Update an event
+      tags:
+      - events
+  /events/{id}/annotations:
+    get:
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/annotation.Annotation'
+            type: array
+      summary: List annotations for an event
+      tags:
+      - annotations
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Annotation data
+        in: body
+        name: annotation
+        required: true
+        schema:
+          $ref: '#/definitions/annotation.Annotation'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/annotation.Annotation'
+      summary: Create an annotation for an event
+      tags:
+      - annotations
+  /events/{id}/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Video file
+        in: formData
+        name: video
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload video for an event
+      tags:
+      - events
+  /portals:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/portal.Portal'
+            type: array
+      summary: List all portals
+      tags:
+      - portals
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Portal data
+        in: body
+        name: portal
+        required: true
+        schema:
+          $ref: '#/definitions/portal.Portal'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/portal.Portal'
+      summary: Create a portal
+      tags:
+      - portals
+  /portals/{id}:
+    delete:
+      parameters:
+      - description: Portal ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a portal
+      tags:
+      - portals
+    get:
+      parameters:
+      - description: Portal ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/portal.Portal'
+      summary: Get portal by ID
+      tags:
+      - portals
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Portal ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Portal data
+        in: body
+        name: portal
+        required: true
+        schema:
+          $ref: '#/definitions/portal.Portal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/portal.Portal'
+      summary: Update a portal
+      tags:
+      - portals
+  /portals/{id}/insights:
+    get:
+      parameters:
+      - description: Portal ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/usecase.InsightsResult'
+      summary: Get insights for a portal
+      tags:
+      - insights
+  /portals/{id}/trials:
+    get:
+      parameters:
+      - description: Portal ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/trial.Trial'
+            type: array
+      summary: List trials for a portal
+      tags:
+      - trials
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Portal ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Trial data
+        in: body
+        name: trial
+        required: true
+        schema:
+          $ref: '#/definitions/trial.Trial'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/trial.Trial'
+      summary: Create a trial for a portal
+      tags:
+      - trials
+  /trials/{id}:
+    delete:
+      parameters:
+      - description: Trial ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a trial
+      tags:
+      - trials
+    get:
+      parameters:
+      - description: Trial ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/trial.Trial'
+      summary: Get trial by ID
+      tags:
+      - trials
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Trial ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Trial data
+        in: body
+        name: trial
+        required: true
+        schema:
+          $ref: '#/definitions/trial.Trial'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/trial.Trial'
+      summary: Update a trial
+      tags:
+      - trials
+  /trials/{id}/events:
+    get:
+      parameters:
+      - description: Trial ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/event.Event'
+            type: array
+      summary: List events for a trial
+      tags:
+      - events
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Trial ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/event.Event'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/event.Event'
+      summary: Create an event for a trial
+      tags:
+      - events
+swagger: "2.0"

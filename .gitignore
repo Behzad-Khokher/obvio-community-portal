@@ -1,0 +1,17 @@
+# Backend
+backend/obvio.db
+backend/bin/
+backend/videos/raw/*.mp4
+backend/videos/processed/
+backend/*.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Env
+.env
+*.local
+
+# OS
+.DS_Store
